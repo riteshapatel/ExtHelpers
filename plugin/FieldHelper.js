@@ -97,7 +97,9 @@ Ext.define('ExtHelpers.plugin.FieldHelper', {
     init: function (field) {
         var me = this;
 
+        // used for resize hack
         me.resizeCount = 0;
+
         if (!me.helperText) {
             return;
         }
@@ -126,11 +128,14 @@ Ext.define('ExtHelpers.plugin.FieldHelper', {
             }
         });
 
+        // special case for textareafield (if textareafield is set to autoGrow)
         if (field.xtype === 'textareafield') {
             field.on({
                 scope: me,
                 'resize': function (field) {
-                    if (me.resizeCount > 1) me.displayHelper(field, {});
+                    // prevent helper from being visible during initial load
+                    // resize is called multiple times during initial load
+                    if (me.resizeCount > 1) me.displayHelper(field);
                     me.resizeCount++;
                 },
                 'boxready': function (field) {
@@ -176,7 +181,6 @@ Ext.define('ExtHelpers.plugin.FieldHelper', {
             defaultAlign: 'b',
             visible: false,
             anchor: true,
-            name: 'helpContainer',
             bodyPadding: 5,
             alwaysOnTop: true,
             bodyStyle: me.helperStyle,
