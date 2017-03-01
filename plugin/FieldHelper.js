@@ -7,6 +7,49 @@
  *
  * @author Ritesh Patel
  * @email ritesh.patel@sencha.com
+
+ * Sample Usage: 
+    // customized style
+    var helperStyle = {
+        backgroundColor: '#FFC7C1',
+        border: '1px solid #404040',
+        borderRadius: '3px',
+        color: '#404040'    
+    }
+    // form
+    Ext.create('Ext.form.Panel', {
+        defaults: {
+            anchor: '50%'
+        },
+        bodyPadding: 5,
+        items: [
+            // customized style and default alignment
+            {
+                xtype: 'textfield',
+                emptyText: 'Enter first name',
+                fieldLabel: 'First Name',
+                plugins: [{
+                    ptype: 'fieldhelper',
+                    helperText: 'This field will only accept a-z or A-Z characters',
+                    helperStyle: helperStyle // <-- customized style
+                }]
+            },
+            // default style and customized alignment (b, bl, br, tl, tr, bl-br etc...)
+            {
+                xtype: 'textareafield',
+                grow: true,
+                name: 'message',
+                fieldLabel: 'Message',
+                anchor: '100%',
+                plugins: [{
+                    ptype: 'fieldhelper',
+                    helperText: 'Text area field helper...',
+                    align: 'bl' // <-- customized alignment
+                }]
+            }
+
+        ]
+    });
  */
 Ext.define('ExtHelpers.plugin.FieldHelper', {
     extend: 'Ext.plugin.Abstract',
