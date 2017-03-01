@@ -63,7 +63,7 @@ Ext.define('ExtHelpers.plugin.FieldHelper', {
 
     /**
      * @cfg {Object} helperStyle
-     * default style for the helper panel
+     * default style for the helper
      */
     helperStyle: {
         backgroundColor: '#404040',
@@ -74,19 +74,19 @@ Ext.define('ExtHelpers.plugin.FieldHelper', {
 
     /**
      * @cfg {String} divStyle
-     * adjusts panel with the size of helper text
+     * adjusts helper with the size of helper text
      */
     divStyle: 'word-wrap: break-word; height:auto',
 
     /**
      * @cfg {String} align
-     * customized alignment of the helper panel
+     * customized alignment of the helper
      */
     align: null,
 
     /**
      * @cfg {Number} width
-     * default width of the helper panel
+     * default width of the helper
      */
     width: 200,
 
@@ -96,14 +96,13 @@ Ext.define('ExtHelpers.plugin.FieldHelper', {
      */
     init: function (field) {
         var me = this;
-        me.panelZIndex = -1;
 
         me.resizeCount = 0;
         if (!me.helperText) {
             return;
         }
 
-        // create helper panel and apply styles
+        // create helper and apply styles
         if (!me.helper) {
             me.helper = me.createHelper();
 
@@ -111,7 +110,7 @@ Ext.define('ExtHelpers.plugin.FieldHelper', {
                 me.helper.setBodyStyle(me.helperStyle);
             }
         }
-        // set text for the helper panel
+        // set text for the helper
         me.helper.setHtml('<div style=' + me.divStyle + '>' + me.helperText + '</div>');
         me.setCmp(field);
 
@@ -143,7 +142,7 @@ Ext.define('ExtHelpers.plugin.FieldHelper', {
 
     /**
      * @method
-     * displays helper panel
+     * displays helper 
      * @param {Ext.form.field.Field} field - form field
      * @param {Object} event - event object
      */
@@ -167,7 +166,8 @@ Ext.define('ExtHelpers.plugin.FieldHelper', {
     },
     /**
      * @method
-     * creates helper panel
+     * creates helper
+     * @return {Object} helper - helper object
      */
     createHelper: function () {
         var me = this;
