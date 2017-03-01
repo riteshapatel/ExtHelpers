@@ -2,13 +2,13 @@
  * This plugin displays a customized tip below a form field. This
  * tip can be used for displaying mandatory field requirements.
  *
- * @class HelperApp.plugin.FieldHelper
+ * @class ExtHelpers.plugin.FieldHelper
  * @extend Ext.plugin.Abstract
  *
  * @author Ritesh Patel
  * @email ritesh.patel@sencha.com
  */
-Ext.define('HelperApp.plugin.FieldHelper', {
+Ext.define('ExtHelpers.plugin.FieldHelper', {
     extend: 'Ext.plugin.Abstract',
     alias: 'plugin.fieldhelper',
 
