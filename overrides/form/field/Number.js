@@ -9,7 +9,7 @@
  * @email ritesh.patel@sencha.com
  */
 Ext.define('ExtHelpers.overrides.form.field.Number', {
-	override: 'Ext.form.field.Number',
+    override: 'Ext.form.field.Number',
     /**
      * @cfg forcePrecision
      * if true - retains precision else default behavior
