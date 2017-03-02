@@ -31,7 +31,9 @@
                 plugins: [{
                     ptype: 'fieldhelper',
                     helperText: 'This field will only accept a-z or A-Z characters',
-                    helperStyle: helperStyle // <-- customized style
+                    tipConfig: {
+                        bodyStyle: helperStyle // <-- customized style
+                    }
                 }]
             },
             // default style and customized alignment (b, bl, br, tl, tr, bl-br etc...)
@@ -52,8 +54,8 @@
     });
  */
 Ext.define('ExtHelpers.plugin.FieldHelper', {
-    extend: 'Ext.plugin.Abstract',
-    alias: 'plugin.fieldhelper',
+     extend: 'Ext.plugin.Abstract',
+    alias: 'plugin.certegra-formhelper',
 
     /**
      * @cfg {String} helperText
@@ -62,25 +64,14 @@ Ext.define('ExtHelpers.plugin.FieldHelper', {
     helperText: null,
 
     /**
-     * @cfg {Object} helperStyle
-     * default style for the helper
+     * @cfg {Object} tipConfig
+     * holds configs passed to the helper
      */
-    helperStyle: {
-        backgroundColor: '#404040',
-        border: '1px solid #CCC',
-        borderRadius: '3px',
-        color: 'white'
-    },
-
-    /**
-     * @cfg {String} divStyle
-     * adjusts helper with the size of helper text
-     */
-    divStyle: 'word-wrap: break-word; height:auto',
+    tipConfig: {},
 
     /**
      * @cfg {String} align
-     * customized alignment of the helper
+     * customized alignment of the helper.
      */
     align: null,
 
@@ -97,8 +88,7 @@ Ext.define('ExtHelpers.plugin.FieldHelper', {
     init: function (field) {
         var me = this;
 
-        // used for resize hack
-        me.resizeCount = 0;
+        me.resizeCount = 0; // textarea field resize counter
 
         if (!me.helperText) {
             return;
@@ -107,57 +97,63 @@ Ext.define('ExtHelpers.plugin.FieldHelper', {
         // create helper and apply styles
         if (!me.helper) {
             me.helper = me.createHelper();
-
-            if (me.helperStyle) {
-                me.helper.setBodyStyle(me.helperStyle);
-            }
         }
+
+        me.helper.setHtml(me.helperText);
         // set text for the helper
-        me.helper.setHtml('<div style=' + me.divStyle + '>' + me.helperText + '</div>');
         me.setCmp(field);
 
         // listeners
         field.on({
-            scope: me,
             'blur': function (field) {
                 me.helper.hide();
             },
 
             'focus': function (field) {
-                me.displayHelper(field);
+                me.showHelper(field);
             }
         });
 
-        // special case for textareafield (if textareafield is set to autoGrow)
+        // handle textarea field (textareafield can be set to auto grow).
+        // textarea resize is called multiple times during the load, boxready is a hack to hide the helper on initial load.
         if (field.xtype === 'textareafield') {
             field.on({
-                scope: me,
                 'resize': function (field) {
-                    // prevent helper from being visible during initial load
-                    // resize is called multiple times during initial load
-                    if (me.resizeCount > 1) me.displayHelper(field);
+                    if (me.resizeCount >= 1) {
+                        me.showHelper(field);
+                    }
                     me.resizeCount++;
                 },
+
                 'boxready': function (field) {
                     me.helper.hide();
                 }
-            })
+            });
         }
     },
 
     /**
-     * @method
-     * displays helper 
-     * @param {Ext.form.field.Field} field - form field
-     * @param {Object} event - event object
+     * sets helper text and initializes the helper
+     * @param {String} helperText - helper text
+     * @param {Ext.form.field.Field} - field to tie the helper to
      */
-    displayHelper: function (field) {
+    setHelperText: function (helperText, field) {
+        var me = this;
+        me.helperText = helperText;
+        me.init(field);
+    },
+
+    /**
+     * displays helper
+     * @param {Ext.form.field.Field} field - form field
+     */
+    showHelper: function (field) {
         var me = this,
-            fieldWidth = field.inputEl.getWidth() || field.getWidth();
+            fieldWidth = field.bodyEl.getWidth() || field.getWidth();
 
         // fields with triggers
         if (field.isXType('numberfield') || field.isXType('combobox')) {
-            fieldWidth = field.bodyEl.getWidth(); // get field width including trigger (if any)
+            fieldWidth = field.bodyEl.getWidth(); // get entire field width with the trigger (if any)
         }
 
         // field width must be greater than the default
@@ -167,31 +163,32 @@ Ext.define('ExtHelpers.plugin.FieldHelper', {
         }
 
         // show helper with offsets and align to a customized or a default value of bottom left
-        me.helper.showBy(field);
+        me.helper.showBy(field.bodyEl);
     },
+
     /**
-     * @method
      * creates helper
-     * @return {Object} helper - helper object
      */
     createHelper: function () {
-        var me = this;
-        return Ext.create('Ext.tip.ToolTip', {
-            html: '<div style=' + me.divStyle + '>This is to hover below the text box</div>',
-            defaultAlign: 'b',
+        var me = this,
+            cfg;
+
+        cfg = Ext.apply({
+            html: me.helperText || 'This is to hover below the text box',
+            defaultAlign: 'tl-bl',
             visible: false,
             anchor: true,
             bodyPadding: 5,
             alwaysOnTop: true,
-            bodyStyle: me.helperStyle,
             autoHide: false,
             closable: true,
-            header: false
-        });
+            header: false,
+        }, me.tipConfig);
+
+        return Ext.create('Ext.tip.ToolTip', cfg);
     },
 
     /**
-     * @method
      * destroy resources
      */
     destroy: function () {

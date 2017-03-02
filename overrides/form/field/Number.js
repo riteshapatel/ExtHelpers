@@ -23,13 +23,8 @@ Ext.define('ExtHelpers.overrides.form.field.Number', {
      * @param {number} value - number field value
      */
     valueToRaw: function (value) {
-        var me = this,
-            decimalSeparator = me.decimalSeparator;
-
-        value = me.parseValue(value);
-        value = me.fixPrecision(value);
-        value = Ext.isNumber(value) ? value : parseFloat(String(value).replace(decimalSeparator, '.'));
-        value = isNaN(value) ? '' : String(value).replace('.', decimalSeparator);
-        return me.forcePrecision ? Ext.Number.toFixed(parseFloat(value), me.decimalPrecision) : parseFloat(Ext.Number.toFixed(parseFloat(value), me.decimalPrecision));
+        var me = this;
+        value = me.callParent(arguments);
+        return me.forcePrecision ? Ext.Number.toFixed(parseFloat(value), me.decimalPrecision) : value;
     }
 });
